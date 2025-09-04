@@ -1,3 +1,4 @@
+-- DB name: ride_app
 -- users---> MYSQL
 CREATE TABLE users (
     user_id VARCHAR(20) PRIMARY KEY,
@@ -29,7 +30,7 @@ CREATE TABLE vehicles (
 );
 
 
-
+-- DB name: ride-app
 -- rides--->MONGODB
 {
   "_id": {
