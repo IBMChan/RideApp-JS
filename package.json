@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/IBMChan/RideApp-JS#readme",
   "dependencies": {
+    "express": "^5.1.0",
     "mongoose": "^8.18.0"
   }
 }
-
