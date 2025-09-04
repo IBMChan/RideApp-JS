@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Ride-App using Node",
   "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,6 +22,8 @@
   "dependencies": {
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
-    "mongoose": "^8.18.0"
+    "mongoose": "^8.18.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.4"
   }
 }
