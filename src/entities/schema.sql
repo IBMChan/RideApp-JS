@@ -16,7 +16,7 @@ CREATE TABLE users (
 
 
 
--- vehicle--->MYSQL
+-- vehicles--->MYSQL
 CREATE TABLE vehicles (
     vehicle_id INT PRIMARY KEY,
     driver_id VARCHAR(20) NOT NULL,
