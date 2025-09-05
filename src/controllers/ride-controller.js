@@ -5,7 +5,7 @@ import {
   updateRideStatus,
   registerVehicle,
   updateVehicle,
-} from "./driver-service.js";
+} from "../services/driver-service.js"
 
 const router = express.Router();
 
