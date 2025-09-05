@@ -23,6 +23,8 @@ app.use(bodyParser.json());
 import rideRoutes from "./routes/ride-routes.js";
 app.use("/api", rideRoutes);
 app.use('/api/users', userRoutes);
+
+//raksha driver
 app.use('/api/rides', rideRoutes);
 
 (async () => {
@@ -61,3 +63,4 @@ app.use('/api/rides', rideRoutes);
     process.exit(1);
   }
 })();
+

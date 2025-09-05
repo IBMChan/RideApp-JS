@@ -1,32 +1,34 @@
 // rides.repository.js
-import Ride from '../../entities/rides-schema.js';
+import Ride from "../../entities/rides-schema.js";
 
-
-class RidesRepository {
-  static async createRide(data) {
-    const ride = new Ride({ ...data, r_status: "requested", r_date: new Date() });
-    return await ride.save();
+export class RidesRepository {
+  async getRideById(ride_id) {
+    return await Ride.findOne({ ride_id });
   }
 
-  static async findById(rideId) {
-    return await Ride.findOne({ ride_id: rideId });
+  async getRideByDriver(driver_id, ride_id) {
+    return await Ride.findOne({ ride_id, driver_id });
   }
 
-  static async findLastRide(riderId) {
-    return await Ride.findOne({ rider_id: riderId }).sort({ r_date: -1 });
+  async getActiveRidesByDriver(driver_id) {
+    return await Ride.find({ driver_id, r_status: { $ne: "completed" } });
   }
 
-  static async updateRide(rideId, update) {
+  
+  async updateRideStatus(driver_id, ride_id, status, vehicle_id = null) {
     return await Ride.findOneAndUpdate(
-      { ride_id: rideId },
-      { $set: update },
+      { ride_id, driver_id: null, r_status: "requested" },//
+      { driver_id: driver_id,r_status: status, ...(vehicle_id && { vehicle_id }) },
       { new: true }
     );
   }
 
-  static async findByRiderId(riderId) {
-    return await Ride.find({ rider_id: riderId });
+  async saveRide(ride) {
+    return await ride.save();
   }
 }
 
+
 export default RidesRepository;
+
+
