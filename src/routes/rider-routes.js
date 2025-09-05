@@ -4,10 +4,11 @@ import RiderController from "../controllers/rider-controller.js";
 const router = express.Router();
 
 // Rider routes
-router.get("/history/:rider_id", RiderController.rideHistory);
+
 router.post("/book", RiderController.bookRide);
 router.post("/cancel/:ride_id", RiderController.cancelRide);
-router.get("/status/:ride_id", RiderController.rideStatus);
-router.get("/upcoming/:rider_id", RiderController.upcomingRides);
+router.get("/payment/:ride_id", RiderController.makePayment);
+router.get("/rate/:rider_id", RiderController.giveRating);
+router.get("/history/:rider_id", RiderController.rideHistory);
 
 export default router;
