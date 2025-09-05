@@ -4,9 +4,9 @@
 //vehicle details updation 
 
 // driver-service.js
-import { pool } from "./mysql.js"; // MySQL connection
+import pool from "../config/mysql.js"; // MySQL connection
 import mongoose from "mongoose";
-import Ride from "./ride-schema.js"; // MongoDB Ride model
+import Ride from "../entities/rides-schema.js"; // MongoDB Ride model
 
 // Accept Ride
 export async function acceptRide(driver_id, ride_id) {
