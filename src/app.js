@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/mongo.js";
 import { connectMySQL, pool } from "./config/mysql.js";
+import userRoutes from './routes/user-routes.js';
+import rideRoutes from './routes/ride-routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,12 +21,14 @@ app.use(express.json());
 // Mount routes
 import rideRoutes from "./routes/ride-routes.js";
 app.use("/api", rideRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/rides', rideRoutes);
 
 (async () => {
   try {
     // Connect to MongoDB and MySQL before starting server
     await Promise.all([connectDB(), connectMySQL()]);
-    console.log("✅ Databases ready (MongoDB + MySQL)");
+    console.log("Databases ready (MongoDB + MySQL)");
 
     // Verify email transport (helps catch SMTP issues early)
     try {
@@ -40,11 +44,13 @@ app.use("/api", rideRoutes);
         const conn = await pool.getConnection();
         await conn.ping();
         conn.release();
-        res.send("Server is up. MongoDB and MySQL connected ✅");
+        res.send("Server is up. MongoDB and MySQL connected ");
       } catch (e) {
         res.status(500).send("Server up, but MySQL ping failed.");
       }
     });
+    
+
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

@@ -4,6 +4,7 @@
 //vehicle details updation 
 
 // driver-service.js
+
 import { pool } from "../config/mysql.js"; // MySQL connection
 import mongoose from "mongoose";
 import Ride from "../entities/rides-schema.js"; // MongoDB Ride model

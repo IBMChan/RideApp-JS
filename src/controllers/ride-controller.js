@@ -1,11 +1,7 @@
 // ride-controller.js
 import express from "express";
-import {
-  acceptRide,
-  updateRideStatus,
-  registerVehicle,
-  updateVehicle,
-} from "../services/driver-service.js";
+import { acceptRide, updateRideStatus, registerVehicle, updateVehicle,} from "../services/driver-service.js";
+
 
 const router = express.Router();
 
