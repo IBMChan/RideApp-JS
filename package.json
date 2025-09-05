@@ -2,6 +2,7 @@
   "name": "rideapp-js",
   "version": "1.0.0",
   "description": "Ride-App using Node.js, Express, MySQL, and MongoDB",
+  "type": "module",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -12,7 +13,13 @@
     "type": "git",
     "url": "git+https://github.com/IBMChan/RideApp-JS.git"
   },
-  "keywords": ["rideapp", "nodejs", "express", "mysql", "mongodb"],
+  "keywords": [
+    "rideapp",
+    "nodejs",
+    "express",
+    "mysql",
+    "mongodb"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -23,17 +30,10 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "mongoose": "^8.18.0",
-<<<<<<< HEAD
-    "mysql2": "^3.14.4"
-  }
-=======
-    "mysql2": "^3.6.0",
-    "dotenv": "^16.3.1"
+    "mysql2": "^3.14.4",
+    "nodemailer": "^6.10.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
-  },
-  "type": "module"
-
->>>>>>> 15c315cac76132bd80294d0e42e7de0e8f0b55df
+  }
 }
