@@ -68,6 +68,6 @@ const rideSchema = new mongoose.Schema({
   ratings: ratingSchema,
 });
 
-const Ride = mongoose.model("Ride", rideSchema);
+const Rides = mongoose.model("Ride", rideSchema);
 
-export default Ride;
+export default Rides;
