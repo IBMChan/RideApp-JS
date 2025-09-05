@@ -18,9 +18,9 @@ if (!MONGO_URI) {
 export const connectDB = async () => {
   try {
     await mongoose.connect(MONGO_URI);
-    console.log("✅ MongoDB Connected");
+    console.log("MongoDB Connected");
   } catch (err) {
-    console.error("❌ MongoDB Error:", err);
+    console.error("MongoDB Error:", err);
     process.exit(1);
   }
 };
@@ -46,5 +46,4 @@ export const connectDB = async () => {
 //   }
 // };
 
-// export default connectDB;
-
+export default connectDB;
