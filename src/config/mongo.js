@@ -1,33 +1,24 @@
+//mongo.js
 
-const express = require("express");
-const mongoose = require("mongoose");
-const path = require("path");
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
-
-const app = express();
+dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI;
-const PORT = Number(process.env.PORT) || 3000;
 
-if (!MONGO_URI) {
-  console.error(" MONGO_URI is not set. Please define it in the .env file at project root.");
-  process.exit(1);
-}
-
-// MongoDB connection
-mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log(" MongoDB Connected"))
-  .catch((err) => {
-    console.error("MongoDB Error:", err);
+const connectDB = async () => {
+  if (!MONGO_URI) {
+    console.error("MONGO_URI is not set in the .env file.");
     process.exit(1);
-  });
+  }
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("MongoDB Connected...");
+  } catch (err) {
+    console.error("MongoDB Connection Error:", err.message);
+    process.exit(1);
+  }
+};
 
-app.get("/", (req, res) => {
-  res.send("MongoDB connection successful!");
-});
-
-app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
-});
+export default connectDB;
