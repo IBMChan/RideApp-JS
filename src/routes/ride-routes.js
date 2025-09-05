@@ -1,6 +1,5 @@
 // ride-routes.js
 import express from "express";
-// import rideController from "./ride-controller.js";
 import rideController from "../controllers/ride-controller.js";
 
 const router = express.Router();

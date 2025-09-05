@@ -1,13 +1,6 @@
 // ride-controller.js
 import express from "express";
-import {
-  acceptRide,
-  updateRideStatus,
-  registerVehicle,
-  updateVehicle,
-  rateRider,
-} from "../services/driver-service.js";
-
+import { acceptRide, updateRideStatus, registerVehicle, updateVehicle,} from "../services/driver-service.js";
 const router = express.Router();
 
 // Accept a ride  works
@@ -23,11 +16,18 @@ router.post("/accept", async (req, res) => {
 
 // Update ride status
 router.patch("/status", async (req, res) => {
+  console.log("[PATCH /driver/status] body:", req.body);
   const { driver_id, ride_id, status } = req.body;
   try {
     const ride = await updateRideStatus(driver_id, ride_id, status);
+    console.log("[PATCH /driver/status] updated:", {
+      ride_id: ride?.ride_id,
+      newStatus: status,
+      rider_id: ride?.rider_id,
+    });
     res.status(200).json({ message: "Ride status updated", ride });
   } catch (err) {
+    console.error("[PATCH /driver/status] error:", err?.message || err);
     res.status(400).json({ error: err.message });
   }
 });
