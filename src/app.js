@@ -4,8 +4,10 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/mongo.js";
 import { connectMySQL, pool } from "./config/mysql.js";
-import userRoutes from './routes/user-routes.js';
-import rideRoutes from './routes/driver-routes.js';
+import userRoutes from "./routes/user-routes.js";
+import driverRoutes from "./routes/driver-routes.js";
+import riderRoutes from "./routes/rider-routes.js";
+import cookieParser from "cookie-parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,25 +17,27 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-// Parse JSON bodies
+// Middlewares
 app.use(express.json());
-app.use(bodyParser.json());
+app.use(cookieParser());
 
-// Mount routes
-import rideRoutes from "./routes/ride-routes.js";
-app.use("/api", rideRoutes);
-app.use('/api/users', userRoutes);
 
-//raksha driver
-app.use('/api/rides', rideRoutes);
+
+// harshit -- users
+app.use("/api/users", userRoutes);
+
+// raksha / laxmikanth-- drivers
+app.use("/api/driver", driverRoutes);
+
+
+// chandana -- riders
+app.use("/app/riders", riderRoutes);
 
 (async () => {
   try {
-    // Connect to MongoDB and MySQL before starting server
     await Promise.all([connectDB(), connectMySQL()]);
     console.log("Databases ready (MongoDB + MySQL)");
 
-    // Verify email transport (helps catch SMTP issues early)
     try {
       const { verifyEmailTransport } = await import("./services/notification-service.js");
       await verifyEmailTransport();
@@ -41,7 +45,6 @@ app.use('/api/rides', rideRoutes);
       console.error("Email verification failed:", mailErr?.message || mailErr);
     }
 
-    // Simple health route
     app.get("/", async (req, res) => {
       try {
         const conn = await pool.getConnection();
@@ -52,8 +55,6 @@ app.use('/api/rides', rideRoutes);
         res.status(500).send("Server up, but MySQL ping failed.");
       }
     });
-    
-
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
@@ -63,4 +64,3 @@ app.use('/api/rides', rideRoutes);
     process.exit(1);
   }
 })();
-

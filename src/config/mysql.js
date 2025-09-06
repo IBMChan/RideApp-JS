@@ -1,3 +1,4 @@
+// config/mysql.js
 import path from "path";
 import dotenv from "dotenv";
 import mysql from "mysql2/promise";
@@ -25,9 +26,9 @@ export const connectMySQL = async () => {
     const connection = await pool.getConnection();
     await connection.ping(); // verify connection
     connection.release();
-    console.log("✅ MySQL Connected");
+    console.log("MySQL Connected");
   } catch (error) {
-    console.error("❌ MySQL Error:", error);
+    console.error("MySQL Error:", error);
     process.exit(1);
   }
 };

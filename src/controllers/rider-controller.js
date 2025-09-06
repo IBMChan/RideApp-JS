@@ -1,51 +1,73 @@
-import RiderService from "../services/rider-service.js";
+import { authMiddleware } from "../middleware/auth-middleware.js";
+import {
+  bookRide,
+  cancelRide,
+  makePayment,
+  giveRating,
+  rideHistory,
+} from "../services/rider-service.js";
 
-class RideController {
-  static async bookRide(req, res) {
-    try {
-      const result = await RiderService.bookRide(req.body);
-      res.status(201).json(result);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+const riderController = {};
+
+// Book a ride
+riderController.bookRide = async (req, res) => {
+  try {
+    const rider_id = req.user.userId;
+    const { pickup_location, drop_location } = req.body;
+    const result = await bookRide(rider_id, pickup_location, drop_location);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
+};
 
-  static async cancelRide(req, res) {
-    try {
-      const result = await RiderService.cancelRide(req.params.id);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+// Cancel a ride
+riderController.cancelRide = async (req, res) => {
+  try {
+    const rider_id = req.user.userId;
+    const ride_id = parseInt(req.params.ride_id);
+    const result = await cancelRide(rider_id, ride_id);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
+};
 
-  static async makePayment(req, res) {
-    try {
-      const result = await RiderService.makePayment(req.params.id, req.body);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+// Make payment
+riderController.makePayment = async (req, res) => {
+  try {
+    const rider_id = req.user.userId;
+    const ride_id = parseInt(req.params.ride_id);
+    const paymentDetails = req.body; // { payment_id, fare, mode }
+    const result = await makePayment(rider_id, ride_id, paymentDetails);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
+};
 
-  static async giveRating(req, res) {
-    try {
-      const result = await RiderService.giveRating(req.params.id, req.body);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+// Give rating
+riderController.giveRating = async (req, res) => {
+  try {
+    const rider_id = req.user.userId;
+    const ride_id = parseInt(req.body.ride_id);
+    const { rate, comment } = req.body;
+    const result = await giveRating(rider_id, ride_id, rate, comment);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
+};
 
-  static async rideHistory(req, res) {
-    try {
-      const { rider_id } = req.params;
-      const result = await RiderService.rideHistory(rider_id);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+// Ride history
+riderController.rideHistory = async (req, res) => {
+  try {
+    const rider_id = req.user.userId;
+    const rides = await rideHistory(rider_id);
+    res.status(200).json(rides);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
-}
+};
 
-export default RideController;
+export default riderController;

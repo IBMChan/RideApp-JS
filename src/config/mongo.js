@@ -1,3 +1,4 @@
+// config/mongo.js
 import mongoose from "mongoose";
 import path from "path";
 import dotenv from "dotenv";
@@ -24,6 +25,7 @@ export const connectDB = async () => {
     process.exit(1);
   }
 };
+
 
 // import mongoose from 'mongoose';
 // import dotenv from 'dotenv';
