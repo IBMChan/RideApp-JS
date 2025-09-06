@@ -19,10 +19,6 @@ const paymentSchema = new mongoose.Schema({
 
 const ratingSchema = new mongoose.Schema({
   rate_id: Number,
-  r_to_d: {
-    rate: Number,
-    comment: String,
-  },
   d_to_r: {
     rate: Number,
     comment: String,
@@ -68,6 +64,6 @@ const rideSchema = new mongoose.Schema({
   ratings: ratingSchema,
 });
 
-const Ride = mongoose.model("Ride", rideSchema);
+const Rides = mongoose.model("Ride", rideSchema);
 
-export default Ride;
+export default Rides;

@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createUser, findUserByEmail, findUserById, updateUserProfile as updateUser, updateUserPassword as updatePass } from '../repository/mysql/users.repository.js';
-import { findRidesByRiderId } from '../repository/mongodb/rides.repository.js';
+import RidesRepository from '../repository/mongodb/rides.repository.js';
+
 
 export const registerUser = async (userData) => {
     const existingUser = await findUserByEmail(userData.email);
@@ -66,9 +67,10 @@ export const updateUserPassword = async (userId, oldPassword, newPassword) => {
 };
 
 export const getRiderHistory = async (riderId) => {
-    const rides = await findRidesByRiderId(riderId);
+    const rides = await RidesRepository.findByRiderId(riderId);
     if (!rides) {
         return [];
     }
     return rides;
+
 };
