@@ -35,14 +35,14 @@ const rideSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  driver_id: {
-    type: String,
-    required: true,
-  },
-  vehicle_id: {
-    type: Number,
-    required: true,
-  },
+driver_id: {
+  type: String,
+  default: null,   // no driver until one accepts
+},
+vehicle_id: {
+  type: Number,
+  default: null,   // no vehicle until one is assigned
+},
   pickup_location: {
     type: String,
     required: true,

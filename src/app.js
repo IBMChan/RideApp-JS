@@ -24,10 +24,10 @@ app.use(cookieParser());
 
 
 // harshit -- users
-app.use("/api/users", userRoutes);
+app.use("/app/users", userRoutes);
 
 // raksha / laxmikanth-- drivers
-app.use("/api/driver", driverRoutes);
+app.use("/app/driver", driverRoutes);
 
 
 // chandana -- riders
