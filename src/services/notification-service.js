@@ -32,7 +32,7 @@ export async function sendRideStatusEmail({ to, riderName, ride, newStatus }) {
   if (!to) return;
 
   const from = process.env.FROM_EMAIL || process.env.SMTP_USER;
-  const subject = `Your ride #${ride?.ride_id} is now ${newStatus}`;
+  const subject = `Your ride is now ${newStatus}`;
   const text = `Hello ${riderName},\n\nYour ride #${ride.ride_id} status has changed to: ${newStatus}.\nPickup: ${ride.pickup_location}\nDrop: ${ride.drop_location}\n\nThank you.`;
 
   const html = `<p>Hello ${riderName},</p>

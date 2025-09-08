@@ -91,11 +91,13 @@ export async function giveRating(rider_id, ride_id, rate, comment) {
   if (ride.r_status !== "completed")
     throw new Error("Rating can only be given for completed rides");
 
-  if (!ride.ratings) ride.ratings = {};
+  if (!ride.ratings) {
+    ride.ratings = {};
+  }
   ride.ratings.r_to_d = { rate, comment };
 
   const updatedRide = await rideRepo.saveRide(ride);
-  return { message: "Driver rated successfully", ride: updatedRide };
+  return { message: "Rating submitted successfully", ride: updatedRide };
 }
 
 // Ride history

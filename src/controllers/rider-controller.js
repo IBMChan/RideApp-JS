@@ -50,7 +50,7 @@ riderController.makePayment = async (req, res) => {
 riderController.giveRating = async (req, res) => {
   try {
     const rider_id = req.user.userId;
-    const ride_id = parseInt(req.body.ride_id);
+    const ride_id = parseInt(req.params.ride_id); // CHANGE body TO params
     const { rate, comment } = req.body;
     const result = await giveRating(rider_id, ride_id, rate, comment);
     res.status(200).json(result);

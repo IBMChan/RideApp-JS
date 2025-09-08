@@ -17,9 +17,19 @@ const paymentSchema = new mongoose.Schema({
   },
 });
 
+// const ratingSchema = new mongoose.Schema({
+//   rate_id: Number,
+//   d_to_r: {
+//     rate: Number,
+//     comment: String,
+//   },
+// });
 const ratingSchema = new mongoose.Schema({
-  rate_id: Number,
-  d_to_r: {
+  r_to_d: { 
+    rate: Number,
+    comment: String,
+  },
+  d_to_r: { 
     rate: Number,
     comment: String,
   },

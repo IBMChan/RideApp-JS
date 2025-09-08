@@ -39,6 +39,20 @@ export const login = async (req, res) => {
   }
 };
 
+export const logout = (req, res) => {
+  try {
+    res.clearCookie("authToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+    });
+    res.status(200).json({ message: "Logout successful." });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to logout." });
+  }
+};
+
 export const getProfile = async (req, res) => {
   try {
     const user = await getUserProfile(req.user.userId);
