@@ -5,7 +5,6 @@ import { authMiddleware } from "../middleware/auth-middleware.js";
 
 const router = express.Router();
 
-// Protect all rider routes
 router.use(authMiddleware);
 
 

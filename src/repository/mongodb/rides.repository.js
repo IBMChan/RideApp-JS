@@ -40,12 +40,12 @@ class RidesRepository {
     );
   }
 
-  // ✅ Rider history
+  // Rider history
   async findByRiderId(rider_id) {
     return await Ride.find({ rider_id }).sort({ r_date: -1 });
   }
 
-  // ✅ Driver history
+  // Driver history
   async findByDriverId(driver_id) {
     return await Ride.find({ driver_id }).sort({ r_date: -1 });
   }
@@ -54,7 +54,7 @@ class RidesRepository {
     return await ride.save();
   }
 
-  // ✅ Get last ride for auto-increment ride_id
+  // Get last ride for auto-increment ride_id
   async getLastRide() {
     return await Ride.findOne().sort({ ride_id: -1 });
   }

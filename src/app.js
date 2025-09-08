@@ -21,14 +21,11 @@ const PORT = Number(process.env.PORT) || 3000;
 app.use(express.json());
 app.use(cookieParser());
 
-
-
 // harshit -- users
 app.use("/app/users", userRoutes);
 
 // raksha / laxmikanth-- drivers
 app.use("/app/driver", driverRoutes);
-
 
 // chandana -- riders
 app.use("/app/riders", riderRoutes);

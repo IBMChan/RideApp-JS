@@ -1,11 +1,4 @@
-import { authMiddleware } from "../middleware/auth-middleware.js";
-import {
-  bookRide,
-  cancelRide,
-  makePayment,
-  giveRating,
-  rideHistory,
-} from "../services/rider-service.js";
+import {bookRide, cancelRide, makePayment, giveRating, rideHistory,} from "../services/rider-service.js";
 
 const riderController = {};
 
@@ -15,7 +8,7 @@ riderController.bookRide = async (req, res) => {
     const rider_id = req.user.userId;
     const { pickup_location, drop_location } = req.body;
     const result = await bookRide(rider_id, pickup_location, drop_location);
-    res.status(201).json(result);
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

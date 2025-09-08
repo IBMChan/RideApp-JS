@@ -54,19 +54,20 @@ export async function updateRideStatus(driver_id, ride_id, status) {
   ride.r_status = status;
   const updatedRide = await rideRepo.saveRide(ride);
   
-  const rider = await userRepo.findUserById(ride.rider_id);
-  if (rider?.email) {
-    await sendRideStatusEmail({
-      to: rider.email,
-      riderName: rider.full_name,
-      ride: {
-        ride_id: updatedRide.ride_id,
-        pickup_location: updatedRide.pickup_location,
-        drop_location: updatedRide.drop_location,
-      },
-      newStatus: status,
-    });
-  }
+const rider = await findUserById(ride.rider_id);
+if (rider?.email) {
+  await sendRideStatusEmail({
+    to: rider.email,
+    riderName: rider.full_name,
+    ride: {
+      ride_id: updatedRide.ride_id,
+      pickup_location: updatedRide.pickup_location,
+      drop_location: updatedRide.drop_location,
+    },
+    newStatus: status,
+  });
+}
+
 
   return updatedRide;
 }

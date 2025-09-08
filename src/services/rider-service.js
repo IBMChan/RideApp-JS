@@ -28,7 +28,7 @@ export async function bookRide(rider_id, pickup_location, drop_location) {
 export async function cancelRide(rider_id, ride_id) {
   const ride = await rideRepo.getRideById(ride_id);
   if (!ride || ride.rider_id != rider_id)
-    throw new Error("Ride not found for this rider");
+    throw new Error("Ride not found with the given ride id.");
 
   if (!["requested", "accepted"].includes(ride.r_status))
     throw new Error(
