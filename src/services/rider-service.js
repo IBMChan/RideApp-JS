@@ -59,7 +59,7 @@ export async function cancelRide(rider_id, ride_id) {
 }
 
 // Make payment
-export async function makePayment(rider_id, ride_id, paymentDetails) {
+export async function makePayment(rider_id, ride_id, paymentDetails = {}) {
   const ride = await rideRepo.getRideById(ride_id);
   if (!ride || ride.rider_id != rider_id)
     throw new Error("Ride not found for this rider");
@@ -70,10 +70,15 @@ export async function makePayment(rider_id, ride_id, paymentDetails) {
   if (ride.payment?.fare)
     throw new Error("Payment has already been made for this ride");
 
+  const { payment_id, fare, mode } = paymentDetails;
+  if (!payment_id || !fare || !mode) {
+    throw new Error("Invalid payment details");
+  }
+
   ride.payment = {
-    payment_id: paymentDetails.payment_id,
-    fare: paymentDetails.fare,
-    mode: paymentDetails.mode,
+    payment_id,
+    fare,
+    mode,
     p_status: "completed",
     p_date: new Date(),
   };

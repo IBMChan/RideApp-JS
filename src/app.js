@@ -3,6 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/mongo.js";
+
 import { connectMySQL, pool } from "./config/mysql.js";
 import userRoutes from "./routes/user-routes.js";
 import driverRoutes from "./routes/driver-routes.js";
@@ -19,6 +20,12 @@ const PORT = Number(process.env.PORT) || 3000;
 
 // Middlewares
 app.use(express.json());
+
+// Middlewares
+app.use(express.json()); // handles JSON
+app.use(express.urlencoded({ extended: true })); // handles form data
+app.use(cookieParser());
+
 app.use(cookieParser());
 
 // harshit -- users
