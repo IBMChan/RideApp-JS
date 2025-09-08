@@ -6,22 +6,15 @@ import {
   updateUserPassword,
   getUserHistory,
 } from "../services/user-service.js";
-import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   try {
-    const { password, role } = req.body;
-
+    const { password } = req.body;
     if (!password || password.length < 8) {
       return res
         .status(400)
         .json({ message: "Password must be at least 8 characters long." });
     }
-
-    if (!role || !["rider", "driver"].includes(role)) {
-      return res.status(400).json({ message: "Role must be rider or driver." });
-    }
-
     const newUser = await registerUser(req.body);
     res.status(201).json(newUser);
   } catch (err) {
@@ -32,25 +25,19 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await loginUser(email, password);
+    const { token } = await loginUser(email, password);
 
-    // Set cookie with token from service
-    res.cookie("authToken", user.token, {
+    res.cookie("authToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // true in production with HTTPS
       sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({
-      message: "Login successful",
-      user: { userId: user.userId, role: user.role, email: user.email },
-    });
+    res.status(200).json({ message: "Login successful" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
-
 
 export const logout = (req, res) => {
   try {
@@ -58,6 +45,7 @@ export const logout = (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
+      path: "/",
     });
     res.status(200).json({ message: "Logout successful." });
   } catch (err) {
@@ -110,9 +98,10 @@ export const updatePassword = async (req, res) => {
   }
 };
 
+// Unified history for riders/drivers
 export const getHistory = async (req, res) => {
   try {
-    const rides = await getUserHistory(req.user.userId);
+    const rides = await getUserHistory(req.user);
     res.status(200).json(rides);
   } catch (err) {
     res.status(500).json({ message: err.message });

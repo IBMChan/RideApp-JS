@@ -20,7 +20,7 @@ export async function acceptRide(driver_id, ride_id) {
 
   const rider = await findUserById(ride.rider_id);
   if (rider?.email) {
-    await sendRideStatusEmail({
+    await sendRideStatusEmail({ // Update 
       to: rider.email,
       riderName: rider.full_name,
       ride: {
@@ -41,7 +41,7 @@ export async function updateRideStatus(driver_id, ride_id, status) {
   if (!ride) throw new Error("Ride not found for this driver.");
 
   const validTransitions = {
-    requested: ["accepted"],
+    requested: ["accepted"],  // ignore -----> to be implemented
     accepted: ["ongoing", "cancelled"],
     ongoing: ["completed"],
     completed: [],
