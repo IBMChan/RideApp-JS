@@ -36,8 +36,8 @@ export async function sendRideStatusEmail({ to, riderName, ride, newStatus }) {
   const text = `Hello ${riderName},\n\nYour ride #${ride.ride_id} status has changed to: ${newStatus}.\nPickup: ${ride.pickup_location}\nDrop: ${ride.drop_location}\n\nThank you.`;
 
   const html = `<p>Hello ${riderName},</p>
-                <p>Your ride <strong>#${ride.ride_id}</strong> status has changed to: <strong>${newStatus}</strong>.</p>
-                <p>Pickup: ${ride.pickup_location}</p>
+                <p>Your ride status has changed to: <strong>${newStatus}</strong>.</p>
+                <p>Pickup: ${ride.pickup_location} Drop: ${ride.drop_location}</p>
                 <p>Drop: ${ride.drop_location}</p>
                 <p>Thank you for riding with us!</p>`;
 
