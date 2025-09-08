@@ -19,10 +19,6 @@ const paymentSchema = new mongoose.Schema({
 
 const ratingSchema = new mongoose.Schema({
   rate_id: Number,
-  r_to_d: {
-    rate: Number,
-    comment: String,
-  },
   d_to_r: {
     rate: Number,
     comment: String,
@@ -39,14 +35,14 @@ const rideSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  driver_id: {
-    type: String,
-    required: true,
-  },
-  vehicle_id: {
-    type: Number,
-    required: true,
-  },
+driver_id: {
+  type: String,
+  default: null,   // no driver until one accepts
+},
+vehicle_id: {
+  type: Number,
+  default: null,   // no vehicle until one is assigned
+},
   pickup_location: {
     type: String,
     required: true,
@@ -68,6 +64,6 @@ const rideSchema = new mongoose.Schema({
   ratings: ratingSchema,
 });
 
-const Ride = mongoose.model("Ride", rideSchema);
+const Rides = mongoose.model("Ride", rideSchema);
 
-export default Ride;
+export default Rides;

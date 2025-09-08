@@ -1,4 +1,5 @@
-import pool from '../../config/mysql.js';
+import { pool } from '../../config/mysql.js';
+
 
 export const createUser = async (user) => {
     const { fullName, email, phone, hashedPassword, role, licenseNumber } = user;

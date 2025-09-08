@@ -1,130 +1,93 @@
-//accept a ride -- only if previous rides are completed and also if vehicle is registered
-//change the ride status --(requested -> accepted -> ongoing -> completed / cancelled only when status is accepted)
-//vehicle registration (only one per driver)
-//vehicle details updation 
+// src/services/driver-service.js
+import { VehicleRepository } from "../repository/mysql/vehicles.repository.js";
+import RidesRepository from "../repository/mongodb/rides.repository.js";
+import { sendRideStatusEmail } from "./notification-service.js";
+import { findUserById } from "../repository/mysql/users.repository.js";
 
-// driver-service.js
-import pool from "../config/mysql.js"; // MySQL connection
-import mongoose from "mongoose";
-import Ride from "../entities/rides-schema.js"; // MongoDB Ride model
+const vehicleRepo = new VehicleRepository();
+const rideRepo = new RidesRepository();
 
-// Accept Ride
+// Accept a ride
 export async function acceptRide(driver_id, ride_id) {
-  try {
-    // Check if driver has registered a vehicle
-    const [vehicles] = await pool.query(
-      "SELECT vehicle_id FROM vehicles WHERE driver_id = ?",
-      [driver_id]
-    );
-    if (vehicles.length === 0) {
-      throw new Error("Driver has no registered vehicle.");
-    }
-    const vehicle_id = vehicles[0].vehicle_id;
+  const vehicle = await vehicleRepo.getVehicleByDriver(driver_id);
+  if (!vehicle) throw new Error("Driver has no registered vehicle.");
 
-    // Check previous rides are completed
-    const prevRides = await Ride.find({ driver_id, r_status: { $ne: "completed" } });
-    if (prevRides.length > 0) {
-      throw new Error("Previous rides are not completed.");
-    }
+  const activeRides = await rideRepo.getActiveRidesByDriver(driver_id);
+  if (activeRides.length > 0) throw new Error("Previous rides are not completed.");
 
-    // Update ride status to accepted
-    const ride = await Ride.findOneAndUpdate(
-      { ride_id, driver_id },
-      { r_status: "accepted", vehicle_id },
-      { new: true }
-    );
+  const ride = await rideRepo.updateRideStatus(driver_id, ride_id, "accepted", vehicle.vehicle_id);
+  if (!ride) throw new Error("Ride not found or not in requested state.");
 
-    if (!ride) throw new Error("Ride not found.");
-
-    return ride;
-  } catch (err) {
-    throw err;
+  const rider = await findUserById(ride.rider_id);
+  if (rider?.email) {
+    await sendRideStatusEmail({
+      to: rider.email,
+      riderName: rider.full_name,
+      ride: {
+        ride_id: ride.ride_id,
+        pickup_location: ride.pickup_location,
+        drop_location: ride.drop_location,
+      },
+      newStatus: "accepted",
+    });
   }
+
+  return ride;
 }
 
-//  Update Ride Status
+// Update ride status
 export async function updateRideStatus(driver_id, ride_id, status) {
-  try {
-    const ride = await Ride.findOne({ ride_id, driver_id });
-    if (!ride) throw new Error("Ride not found.");
+  const ride = await rideRepo.getRideByDriver(driver_id, ride_id);
+  if (!ride) throw new Error("Ride not found for this driver.");
 
-    const validTransitions = {
-      requested: ["accepted"],
-      accepted: ["ongoing", "cancelled"],
-      ongoing: ["completed"],
-      completed: [],
-      cancelled: [],
-    };
+  const validTransitions = {
+    requested: ["accepted"],
+    accepted: ["ongoing", "cancelled"],
+    ongoing: ["completed"],
+    completed: [],
+    cancelled: [],
+  };
 
-    if (!validTransitions[ride.r_status].includes(status)) {
-      throw new Error(`Cannot change status from ${ride.r_status} to ${status}`);
-    }
+  if (!validTransitions[ride.r_status].includes(status))
+    throw new Error(`Cannot change status from ${ride.r_status} to ${status}`);
 
-    ride.r_status = status;
-    await ride.save();
-    return ride;
-  } catch (err) {
-    throw err;
+  ride.r_status = status;
+  const updatedRide = await rideRepo.saveRide(ride);
+
+  const rider = await findUserById(ride.rider_id);
+  if (rider?.email) {
+    await sendRideStatusEmail({
+      to: rider.email,
+      riderName: rider.full_name,
+      ride: {
+        ride_id: updatedRide.ride_id,
+        pickup_location: updatedRide.pickup_location,
+        drop_location: updatedRide.drop_location,
+      },
+      newStatus: status,
+    });
   }
+
+  return updatedRide;
 }
 
-// Vehicle Registration (only 1 per driver)
+// Register vehicle
 export async function registerVehicle(driver_id, vehicleData) {
-  try {
-    const [existing] = await pool.query(
-      "SELECT vehicle_id FROM vehicles WHERE driver_id = ?",
-      [driver_id]
-    );
-
-    if (existing.length > 0) {
-      throw new Error("Driver already has a registered vehicle.");
-    }
-
-    const result = await pool.query(
-      `INSERT INTO vehicles (driver_id, model, year, reg_number, plate_number, color)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        driver_id,
-        vehicleData.model,
-        vehicleData.year,
-        vehicleData.reg_number,
-        vehicleData.plate_number,
-        vehicleData.color || null,
-      ]
-    );
-
-    return { vehicle_id: result[0].insertId, ...vehicleData };
-  } catch (err) {
-    throw err;
-  }
+  return await vehicleRepo.registerVehicle(driver_id, vehicleData);
 }
 
-// Update Vehicle Details
+// Update vehicle
 export async function updateVehicle(driver_id, vehicleData) {
-  try {
-    const [existing] = await pool.query(
-      "SELECT vehicle_id FROM vehicles WHERE driver_id = ?",
-      [driver_id]
-    );
+  return await vehicleRepo.updateVehicle(driver_id, vehicleData);
+}
 
-    if (existing.length === 0) throw new Error("No vehicle registered for this driver.");
+// Rate rider
+export async function rateRider(ride_id, driver_id, rating, comment) {
+  const ride = await rideRepo.getRideByDriver(driver_id, ride_id);
+  if (!ride) throw new Error("Ride not found or driver not part of ride");
+  if (ride.r_status !== "completed") throw new Error("Can only rate after ride completion");
 
-    const vehicle_id = existing[0].vehicle_id;
-
-    await pool.query(
-      `UPDATE vehicles SET model=?, year=?, reg_number=?, plate_number=?, color=? WHERE vehicle_id=?`,
-      [
-        vehicleData.model,
-        vehicleData.year,
-        vehicleData.reg_number,
-        vehicleData.plate_number,
-        vehicleData.color || null,
-        vehicle_id,
-      ]
-    );
-
-    return { vehicle_id, ...vehicleData };
-  } catch (err) {
-    throw err;
-  }
+  if (!ride.ratings) ride.ratings = {};
+  ride.ratings.d_to_r = { rate: rating, comment };
+  return await rideRepo.saveRide(ride);
 }
