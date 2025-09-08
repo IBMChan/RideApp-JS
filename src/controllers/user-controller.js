@@ -34,25 +34,23 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await loginUser(email, password);
 
-    // user contains { _id, role }
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    res.cookie("authToken", token, {
+    // Set cookie with token from service
+    res.cookie("authToken", user.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({
+      message: "Login successful",
+      user: { userId: user.userId, role: user.role, email: user.email },
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 export const logout = (req, res) => {
   try {
