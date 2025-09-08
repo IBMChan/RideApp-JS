@@ -10,6 +10,16 @@ class RidesRepository {
     return await newRide.save();
   }
 
+
+  async saveRide(ride) {
+    return await ride.save();
+  }
+  
+  async getLastRide() {
+    return await Ride.findOne().sort({ ride_id: -1 });
+  }
+
+
   async getRidesByRider(rider_id) {
     return await Ride.find({ rider_id }).sort({ r_date: -1 });
   }

@@ -3,6 +3,7 @@ import { authMiddleware } from "../middleware/auth-middleware.js";
 import {
   register,
   login,
+  logout,
   getProfile,
   updateProfile,
   updatePassword,
@@ -16,6 +17,7 @@ router.post("/register", register);
 router.post("/login", login);
 
 // Protected routes
+router.post("/logout", authMiddleware, logout);
 router.get("/profile", authMiddleware, getProfile);
 router.put("/profile", authMiddleware, updateProfile);
 router.patch("/password", authMiddleware, updatePassword);
