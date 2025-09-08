@@ -1,50 +1,63 @@
-// src/app.js
 import express from "express";
+import path from "path";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { connectDB } from "./config/mongo.js";
+import { connectMySQL, pool } from "./config/mysql.js";
+import userRoutes from "./routes/user-routes.js";
+import driverRoutes from "./routes/driver-routes.js";
+import riderRoutes from "./routes/rider-routes.js";
 import cookieParser from "cookie-parser";
 
-// DB connections
-import connectMongoDB from "./config/mongodb.js";
-import connectMySQL from "./config/mysql.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Routes
-import driverRoutes from "./routes/driver-routes.js";
-// (later you can add riderRoutes, authRoutes, etc.)
-
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const app = express();
+const PORT = Number(process.env.PORT) || 3000;
 
-// ---------- Middleware ----------
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// ---------- Routes ----------
-app.use("/api/rides/driver", driverRoutes);
+// harshit -- users
+app.use("/app/users", userRoutes);
 
-// Health check / root endpoint
-app.get("/", (req, res) => {
-  res.send("🚗 RideApp API is running...");
-});
+// raksha / laxmikanth-- drivers
+app.use("/app/driver", driverRoutes);
 
-// ---------- Start Server ----------
-const PORT = process.env.PORT || 3000;
+// chandana -- riders
+app.use("/app/riders", riderRoutes);
 
-async function startServer() {
+(async () => {
   try {
-    // connect to databases in parallel
-    await Promise.all([connectMongoDB(), connectMySQL()]);
-    console.log("✅ Databases connected (MongoDB + MySQL)");
+    await Promise.all([connectDB(), connectMySQL()]);
+    console.log("Databases ready (MongoDB + MySQL)");
+
+    try {
+      const { verifyEmailTransport } = await import("./services/notification-service.js");
+      await verifyEmailTransport();
+    } catch (mailErr) {
+      console.error("Email verification failed:", mailErr?.message || mailErr);
+    }
+
+    app.get("/", async (req, res) => {
+      try {
+        const conn = await pool.getConnection();
+        await conn.ping();
+        conn.release();
+        res.send("Server is up. MongoDB and MySQL connected ");
+      } catch (e) {
+        res.status(500).send("Server up, but MySQL ping failed.");
+      }
+    });
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
   } catch (err) {
-    console.error("❌ Failed to start server:", err);
+    console.error("Failed to start server:", err);
     process.exit(1);
   }
-}
-
-startServer();
-
-export default app;
+})();
